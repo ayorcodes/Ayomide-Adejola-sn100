@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
 import { performance } from 'perf_hooks';
-import { EZone, ICoordinates } from 'src/types/landing-zone.types';
-import { drone } from 'src/utils/constants';
-import { getCoordinates } from 'src/utils/landing-zone.helpers';
-import { validate } from 'src/utils/validation';
+import { EZone, ICoordinates } from '../types/landing-zone.types';
+import { drone } from '../utils/constants';
+import { getCoordinates } from '../utils/landing-zone.helpers';
+import { validate } from '../utils/validation';
 
 const router = Router();
 

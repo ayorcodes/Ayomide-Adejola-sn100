@@ -1,9 +1,9 @@
 import e, { Router } from 'express';
 import { body } from 'express-validator';
-import { EPoint, PathList } from 'src/types/path-find.types';
-import { drone } from 'src/utils/constants';
-import { getPaths } from 'src/utils/path-find.helpers';
-import { validate } from 'src/utils/validation';
+import { EPoint, PathList } from '../types/path-find.types';
+import { drone } from '../utils/constants';
+import { getPaths } from '../utils/path-find.helpers';
+import { validate } from '../utils/validation';
 import { bfs, Graph, shortestPath as SP } from '../utils/graph';
 
 const router = Router();

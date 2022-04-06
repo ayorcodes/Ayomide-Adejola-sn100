@@ -1,6 +1,6 @@
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { EZone, ICoordinates } from 'src/types/landing-zone.types';
+import { EZone, ICoordinates } from '../types/landing-zone.types';
 
 export const getCoordinates = async (zone?: EZone): Promise<ICoordinates> => {
   if (!zone) {

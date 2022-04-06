@@ -4,7 +4,9 @@
   "description": "Zaapi backend developer interview task",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "keywords": [
     "node",

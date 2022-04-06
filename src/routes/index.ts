@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { drone, ship } from 'src/utils/constants';
+import { drone, ship } from '../utils/constants';
 import landingZone from './landing-zone.routes';
 import pathFind from './path-find.routes';
 

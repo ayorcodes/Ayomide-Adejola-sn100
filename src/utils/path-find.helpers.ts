@@ -1,4 +1,4 @@
-import { PathList } from 'src/types/path-find.types';
+import { PathList } from '../types/path-find.types';
 
 export const getPaths = async (): Promise<PathList> => {
   // Simulate api call
