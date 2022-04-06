@@ -1,9 +1,10 @@
-import { Router } from 'express';
+import e, { Router } from 'express';
 import { body } from 'express-validator';
 import { EPoint, PathList } from 'src/types/path-find.types';
 import { drone } from 'src/utils/constants';
 import { getPaths } from 'src/utils/path-find.helpers';
 import { validate } from 'src/utils/validation';
+import { bfs, Graph, shortestPath as SP } from '../utils/graph';
 
 const router = Router();
 
@@ -30,8 +31,14 @@ router.post(
   async (req, res) => {
     const { start, end } = req.body;
     const paths = await getPaths();
-    const path = findShortestPath(paths, start, end);
-    res.status(200).send(path);
+    try {
+      const path = findShortestPath(paths, start, end);
+      res.status(200).send(path);
+    } catch (error: any) {
+      res.status(400).send({
+        message: error.message,
+      });
+    }
   },
 );
 
@@ -40,87 +47,22 @@ const findShortestPath = (
   startNode: string,
   endNode: string,
 ) => {
-  // track distances from the start node using a hash object
-  let distances: Record<string, number> = {};
-  distances[endNode] = Infinity;
-  distances = Object.assign(distances, paths[startNode]);
+  var graph = new Graph();
 
-  // track paths using a hash object
-  const parents: Record<string, string | null> = { [endNode]: null };
-  for (const child in paths[startNode]) {
-    parents[child] = startNode;
-  }
-
-  // collect visited nodes
-  const visited: string[] = [];
-  // find the nearest node
-  let node = shortestDistanceNode(distances, visited);
-
-  // for that node:
-  while (node) {
-    // find its distance from the start node & its child nodes
-    const distance = distances[node];
-    const children = paths[node];
-
-    // for each of those child nodes:
-    for (const child in children) {
-      // save the distance from the start node to the child node
-      const newdistance = distance + children[child];
-      // if there's no recorded distance from the start node to the child node in the distances object
-      // or if the recorded distance is shorter than the previously stored distance from the start node to the child node
-      if (!distances[child] || distances[child] > newdistance) {
-        // save the distance to the object
-        distances[child] = newdistance;
-        // record the path
-        parents[child] = node;
-      }
+  for (const x of Object.keys(paths)) {
+    for (const y in paths[x]) {
+      graph.addEdge(x, y);
     }
-    // move the current node to the visited set
-    visited.push(node);
-    // move to the nearest neighbor node
-    node = shortestDistanceNode(distances, visited);
   }
 
-  // using the stored paths from start node to end node
-  // record the shortest path
-  const shortestPath = [endNode];
-  let parent = parents[endNode];
-  while (parent) {
-    shortestPath.push(parent);
-    parent = parents[parent];
-  }
-  shortestPath.reverse();
+  const shortestPath = SP(graph, startNode, endNode);
 
-  //this is the shortest path
   const results = {
-    distance: distances[endNode],
+    distances: graph.neighbors[endNode],
     path: shortestPath,
   };
-  // return the shortest path & the end node's distance from the start node
+
   return results;
-};
-
-const shortestDistanceNode = (
-  distances: Record<string, number>,
-  visited: string[],
-) => {
-  // create a default value for shortest
-  let shortest: string | null = null;
-
-  // for each node in the distances object
-  for (const node in distances) {
-    // if no node has been assigned to shortest yet
-    // or if the current node's distance is smaller than the current shortest
-    const currentIsShortest =
-      shortest === null || distances[node] < distances[shortest];
-
-    // and if the current node is in the unvisited set
-    if (currentIsShortest && !visited.includes(node)) {
-      // update shortest to be the current node
-      shortest = node;
-    }
-  }
-  return shortest;
 };
 
 export default router;
